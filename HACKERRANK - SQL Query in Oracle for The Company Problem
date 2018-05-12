@@ -1,0 +1,17 @@
+Select C.Company_Code,C.Founder,Count(distinct LM.lead_manager_code),count(distinct SM.senior_manager_code),Count(distinct M.manager_code),Count(distinct E.Employee_code)
+From Company C Join Lead_Manager LM
+on C.Company_Code=LM.Company_Code
+Join Senior_Manager SM
+on C.Company_Code=SM.Company_Code
+and LM.lead_manager_code=SM.lead_manager_code
+Join Manager M
+on C.Company_Code=M.Company_Code
+and LM.lead_manager_code=M.lead_manager_code
+and SM.Senior_manager_code=M.Senior_manager_code
+Join Employee E
+on C.Company_Code=E.Company_Code
+and LM.lead_manager_code=E.lead_manager_code
+and SM.Senior_manager_code=E.Senior_manager_code
+and M.Manager_code=E.Manager_code
+group by C.Company_Code,C.Founder
+ORDER BY Company_Code ;
