@@ -1,0 +1,20 @@
+Select First_Set.submission_date,Second_Set.C,First_Set.hacker_id,First_Set.Name From
+(Select submission_date,hacker_id,name from
+(
+Select b.submission_date,a.name,a.hacker_id,rank() over(partition by b.submission_date order by count(1) desc,a.hacker_id asc) ranking from hackers a join submissions b on a.hacker_id=b.hacker_id group by b.submission_date,a.name,a.hacker_id
+) T Where ranking =1 ) First_Set
+Join
+(Select submission_date,count(distinct hacker_id) C from
+(
+With Submissions_CTE(submission_date,hacker_id) as
+(
+Select submission_date,hacker_id from submissions
+where submission_date = (select min(submission_date) from submissions)
+Union All
+Select a.submission_date,a.hacker_id 
+from submissions a join Submissions_CTE b  
+on a.hacker_id=b.hacker_id
+and (a.submission_date - b.submission_date)= 1 )
+ Select submission_date,count(distinct hacker_id) C from Submissions_CTE group by submission_date ) Second_Set
+ on First_Set.submission_date=Second_Set.submission_date
+ order by First_Set.submission_date asc;
