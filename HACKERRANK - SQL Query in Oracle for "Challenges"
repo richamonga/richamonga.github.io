@@ -1,0 +1,18 @@
+Select hacker_id,name,C from
+(
+Select h.hacker_id,h.name,count(c.challenge_id) C,rank() over (order by count(c.challenge_id) desc) RN
+from hackers h join challenges c on h.hacker_id = c.hacker_id 
+Group By h.hacker_id,h.name
+) T Where RN not in /*Exluding those records which repeating Ranks i.e. with same no.of challenges for which count is less than highest no. of challenges*/
+(
+Select RN from 
+(
+Select h.hacker_id,h.name,count(c.challenge_id) C,rank() over (order by count(c.challenge_id) desc) RN
+from hackers h join challenges c on h.hacker_id = c.hacker_id 
+group by h.hacker_id,h.name) T 
+where RN <> '1'
+Group By RN
+having count(1) > 1
+)
+order by RN,Hacker_id 
+;
